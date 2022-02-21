@@ -9,8 +9,6 @@ public class LoginMember implements UserDetails {
     private String password;
     private Integer age;
 
-    protected LoginMember() { }
-
     public static LoginMember of(Member member) {
         return new LoginMember(member.getId(), member.getEmail(), member.getPassword(), member.getAge());
     }
@@ -22,28 +20,38 @@ public class LoginMember implements UserDetails {
         this.age = age;
     }
 
-    @Override
+    public boolean checkPassword(String password) {
+        return this.password.equals(password);
+    }
+
     public Long getId() {
         return id;
     }
 
-    @Override
-    public Integer getAge() {
-        return age;
-    }
-
-    @Override
     public String getEmail() {
         return email;
     }
 
-    @Override
+    public Integer getAge() {
+        return age;
+    }
+
     public String getPassword() {
         return password;
     }
 
     @Override
-    public boolean checkCredentials(String credentials) {
-        return this.password.equals(credentials);
+    public Object getPrincipal() {
+        return email;
+    }
+
+    @Override
+    public Object getCredentials() {
+        return password;
+    }
+
+    @Override
+    public boolean checkCredentials(Object credentials) {
+        return this.password.equals(credentials.toString());
     }
 }

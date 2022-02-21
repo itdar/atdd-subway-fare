@@ -1,20 +1,22 @@
 package nextstep.subway.domain;
 
 import java.util.List;
-import nextstep.subway.domain.farepolicy.DiscountFarePolicy;
-import nextstep.subway.domain.farepolicy.FarePolicy;
-import nextstep.subway.domain.farepolicy.MaxLineFarePolicy;
-import nextstep.subway.domain.farepolicy.OverFarePolicy;
 
 public class Path {
+    private final int DEFAULT_FARE = 1250;
+    private final int DEFAULT_OVER_CHARGE_DISTANCE = 5;
+    private final int EXTRA_CHARGE_START_DISTANCE = 50;
+    private final int EXTRA_CHARGE = 100;
+    private final int EXTRA_CHARGE_DISTANCE = 8;
+
     private Sections sections;
+
     private int fareDistance;
-    private FarePolicy farePolicy = new FarePolicy();
 
     protected Path() {
     }
 
-    private Path(Sections sections, int fareDistance) {
+    public Path(Sections sections, int fareDistance) {
         this.sections = sections;
         this.fareDistance = fareDistance;
     }
@@ -39,18 +41,25 @@ public class Path {
         return sections.getStations();
     }
 
-    private int calculateFare() {
-        return farePolicy.calculateFare();
+    public int getFare() {
+        return DEFAULT_FARE + getOverFare(fareDistance);
     }
 
-    public int extractFare() {
-        return calculateFare();
+    protected int getOverFare(int distance) {
+        if (distance <= EXTRA_CHARGE_START_DISTANCE) {
+            return caculateDefaultOverFare(distance);
+        }
+
+        int overFare = caculateDefaultOverFare(EXTRA_CHARGE_START_DISTANCE);
+
+        return overFare + caculateExtraFare(distance - EXTRA_CHARGE_START_DISTANCE);
     }
 
-    public void farePolicySetting(int age) {
-        this.farePolicy
-            .appendPolicy(new OverFarePolicy(fareDistance))
-            .appendPolicy(new MaxLineFarePolicy(sections))
-            .appendPolicy(new DiscountFarePolicy(age));
+    private int caculateDefaultOverFare(int distance) {
+        return (int) ((Math.ceil(((distance) - 1) / DEFAULT_OVER_CHARGE_DISTANCE) + 1) * 100) - 200;
+    }
+
+    private int caculateExtraFare(int extraDistance) {
+        return ((extraDistance-1) / EXTRA_CHARGE_DISTANCE + 1) * EXTRA_CHARGE;
     }
 }

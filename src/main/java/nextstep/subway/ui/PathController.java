@@ -1,8 +1,5 @@
 package nextstep.subway.ui;
 
-import nextstep.auth.authorization.AuthenticationPrincipal;
-import nextstep.auth.userdetails.UserDetails;
-import nextstep.member.domain.LoginMember;
 import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.PathType;
@@ -20,9 +17,8 @@ public class PathController {
     }
 
     @GetMapping("/paths")
-    public ResponseEntity<PathResponse> findPathByDistance(@AuthenticationPrincipal LoginMember loginMember
-        , @RequestParam Long source
+    public ResponseEntity<PathResponse> findPathByDistance(@RequestParam Long source
         , @RequestParam Long target, @RequestParam PathType pathType) {
-        return ResponseEntity.ok(pathService.findPath(loginMember, source, target, pathType));
+        return ResponseEntity.ok(pathService.findPath(source, target, pathType));
     }
 }
